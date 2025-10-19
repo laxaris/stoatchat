@@ -22,10 +22,11 @@ pub async fn delete_bot(
     bot.delete(db).await?;
 
     for channel_id in get_user_voice_channels(&bot.id).await? {
-        let node = get_channel_node(&channel_id).await?.unwrap();
-        let channel = Reference::from_unchecked(&channel_id).as_channel(db).await?;
+        if let Some(node) = get_channel_node(&channel_id).await? {
+            let _ = voice_client.remove_user(&node, &bot.id, &channel_id).await;
+        }
 
-        voice_client.remove_user(&node, &bot.id, &channel_id).await?;
+        let channel = Reference::from_unchecked(&channel_id).as_channel(db).await?;
 
         delete_voice_state(&channel_id, channel.server(), &bot.id).await?;
     }

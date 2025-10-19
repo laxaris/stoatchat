@@ -79,13 +79,13 @@ pub async fn call(
         // should only ever loop once but just to cover our backs.
 
         for channel_id in get_user_voice_channels(&user.id).await? {
-            let node = get_channel_node(&channel_id).await?.unwrap();
+            if let Some(node) = get_channel_node(&channel_id).await? {
+                // if this errors its just a mismatching state - ignore and proceed to still delete our state
+                let _ = voice_client.remove_user(&node, &user.id, &channel_id).await;
+            };
+
             let channel = Reference::from_unchecked(&channel_id)
                 .as_channel(db)
-                .await?;
-
-            voice_client
-                .remove_user(&node, &user.id, &channel_id)
                 .await?;
 
             delete_voice_state(&channel_id, channel.server(), &user.id).await?;

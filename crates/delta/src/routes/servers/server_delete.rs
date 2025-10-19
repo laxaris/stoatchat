@@ -39,9 +39,9 @@ pub async fn delete(
     } else {
         if let Some(channel_id) = get_user_voice_channel_in_server(&user.id, &server.id).await? {
             if server.channels.iter().any(|c| c == &channel_id) {
-                let node = get_channel_node(&channel_id).await?.unwrap();
-
-                voice_client.remove_user(&node, &user.id, &channel_id).await?;
+                if let Some(node) = get_channel_node(&channel_id).await? {
+                    let _ = voice_client.remove_user(&node, &user.id, &channel_id).await;
+                }
 
                 delete_voice_state(&channel_id, Some(&server.id), &user.id).await?;
             }

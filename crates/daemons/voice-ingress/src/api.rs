@@ -244,7 +244,7 @@ pub async fn ingress(
                 if disconnect {
                     log::debug!("Removing user {user_id} from channel {channel_id} {event:?} due to forbidden track.");
 
-                    voice_client.remove_user(node, user_id, channel_id).await?;
+                    let _ = voice_client.remove_user(node, user_id, channel_id).await;
                     delete_voice_state(channel_id, channel.server(), user_id).await?;
 
                     return Ok(EmptyResponse);
