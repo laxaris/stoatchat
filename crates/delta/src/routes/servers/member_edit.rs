@@ -221,7 +221,7 @@ pub async fn edit(
                 to: new_voice_channel.id().to_string(),
                 token,
             }
-            .p_user(target_user.id.clone(), db)
+            .private(target_user.id.clone())
             .await;
         };
     } else if can_publish.is_some() || can_receive.is_some() || remove_contains_voice {
