@@ -1,7 +1,7 @@
 use revolt_config::configure;
 use revolt_database::DatabaseInfo;
 use revolt_result::Result;
-use tasks::{file_deletion, prune_dangling_files};
+use tasks::{file_deletion, prune_dangling_files, prune_members};
 use tokio::try_join;
 
 use crate::tasks::prune_authorized_bots;
@@ -17,6 +17,7 @@ async fn main() -> Result<()> {
         file_deletion::task(db.clone()),
         prune_dangling_files::task(db.clone()),
         prune_authorized_bots::task(db.clone()),
+        prune_members::task(db.clone())
     )
     .map(|_| ())
 }

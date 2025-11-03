@@ -20,16 +20,31 @@ pub enum Ping {
 }
 
 /// Fields provided in Ready payload
-#[derive(PartialEq)]
-pub enum ReadyPayloadFields {
-    Users,
-    Servers,
-    Channels,
-    Members,
-    Emoji,
+#[derive(PartialEq, Debug, Clone, Deserialize)]
+pub struct ReadyPayloadFields {
+    pub users: bool,
+    pub servers: bool,
+    pub channels: bool,
+    pub members: bool,
+    pub emojis: bool,
+    pub user_settings: Vec<String>,
+    pub channel_unreads: bool,
+    pub policy_changes: bool,
+}
 
-    UserSettings(Vec<String>),
-    ChannelUnreads,
+impl Default for ReadyPayloadFields {
+    fn default() -> Self {
+        Self {
+            users: true,
+            servers: true,
+            channels: true,
+            members: true,
+            emojis: true,
+            user_settings: Vec::new(),
+            channel_unreads: false,
+            policy_changes: true,
+        }
+    }
 }
 
 /// Protocol Events
@@ -63,7 +78,8 @@ pub enum EventV1 {
         #[serde(skip_serializing_if = "Option::is_none")]
         channel_unreads: Option<Vec<ChannelUnread>>,
 
-        policy_changes: Vec<PolicyChange>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        policy_changes: Option<Vec<PolicyChange>>,
     },
 
     /// Ping response
@@ -144,7 +160,13 @@ pub enum EventV1 {
     },
 
     /// User joins server
-    ServerMemberJoin { id: String, user: String },
+    ServerMemberJoin {
+        id: String,
+        // Deprecated: use member.id.user
+        #[deprecated = "Use member.id.user instead"]
+        user: String,
+        member: Member,
+    },
 
     /// User left server
     ServerMemberLeave {

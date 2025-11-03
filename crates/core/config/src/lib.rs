@@ -191,6 +191,7 @@ pub struct ApiSecurity {
     pub trust_cloudflare: bool,
     pub easypwned: String,
     pub token_secret: String,
+    pub tenor_key: String,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -366,6 +367,7 @@ pub struct Sentry {
     pub proxy: String,
     pub pushd: String,
     pub crond: String,
+    pub gifbox: String,
 }
 
 #[derive(Deserialize, Debug, Clone)]
