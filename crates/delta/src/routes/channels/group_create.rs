@@ -6,10 +6,16 @@ use rocket::serde::json::Json;
 use rocket::State;
 use validator::Validate;
 
-/// # Create Group
+/// Create Group
 ///
 /// Create a new group channel.
-#[utoipa::path(tag = "Groups")]
+#[utoipa::path(
+    tag = "Groups",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[post("/create", data = "<data>")]
 pub async fn create_group(
     db: &State<Database>,

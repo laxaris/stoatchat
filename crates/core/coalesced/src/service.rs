@@ -15,7 +15,7 @@ use crate::{CoalescionServiceConfig, Error};
 
 #[derive(Debug, Clone)]
 #[allow(clippy::type_complexity)]
-/// # Coalescion service
+/// Coalescion service
 ///
 /// See module description for example usage.
 pub struct CoalescionService<Id: Hash + Clone + Eq> {

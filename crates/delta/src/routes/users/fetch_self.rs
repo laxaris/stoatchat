@@ -3,10 +3,16 @@ use revolt_models::v0;
 use revolt_result::Result;
 use rocket::serde::json::Json;
 
-/// # Fetch Self
+/// Fetch Self
 ///
 /// Retrieve your user information.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[get("/@me")]
 pub async fn fetch(user: User) -> Result<Json<v0::User>> {
     Ok(Json(user.into_self(false).await))

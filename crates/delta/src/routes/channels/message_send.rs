@@ -12,10 +12,17 @@ use rocket::serde::json::Json;
 use rocket::State;
 use validator::Validate;
 
-/// # Send Message
+/// Send Message
 ///
 /// Sends a message to the given channel.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(IdempotencyKey),
+    responses(
+        (status = 200, body = v0::Message),
+    ),
+)]
 #[post("/<target>/messages", data = "<data>")]
 pub async fn message_send(
     db: &State<Database>,

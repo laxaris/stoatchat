@@ -8,10 +8,17 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Fetch Messages
+/// Fetch Messages
 ///
 /// Fetch multiple messages.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(v0::OptionsQueryMessages),
+    responses(
+        (status = 200, body = v0::BulkMessageResponse),
+    ),
+)]
 #[get("/<target>/messages?<options..>")]
 pub async fn query(
     db: &State<Database>,

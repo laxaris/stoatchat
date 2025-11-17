@@ -6,10 +6,16 @@ use rocket::State;
 use rocket::serde::json::Json;
 use validator::Validate;
 
-/// # Edit Bot
+/// Edit Bot
 ///
 /// Edit bot details by its id.
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::BotWithUserResponse),
+    ),
+)]
 #[patch("/<target>", data = "<data>")]
 pub async fn edit_bot(
     db: &State<Database>,

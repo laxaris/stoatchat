@@ -7,10 +7,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Delete Role
+/// Delete Role
 ///
 /// Delete a server role by its id.
-#[utoipa::path(tag = "Server Permissions")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/roles/<role_id>")]
 pub async fn delete(
     db: &State<Database>,

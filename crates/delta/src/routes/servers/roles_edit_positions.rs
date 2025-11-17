@@ -7,10 +7,16 @@ use revolt_permissions::{calculate_server_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Edits server roles ranks
+/// Edits server roles ranks
 ///
 /// Edit's server role's ranks.
-#[utoipa::path(tag = "Server Permissions")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Server),
+    ),
+)]
 #[patch("/<target>/roles/ranks", data = "<data>")]
 pub async fn edit_role_ranks(
     db: &State<Database>,

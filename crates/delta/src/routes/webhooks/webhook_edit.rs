@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Edits a webhook
+/// Edits a webhook
 ///
 /// Edits a webhook
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = Webhook),
+    ),
+)]
 #[patch("/<webhook_id>", data = "<data>")]
 pub async fn webhook_edit(
     db: &State<Database>,

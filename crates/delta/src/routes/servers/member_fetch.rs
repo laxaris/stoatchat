@@ -7,10 +7,24 @@ use revolt_permissions::PermissionQuery;
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Member
+/// Fetch Member
 ///
 /// Retrieve a member.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(
+        (
+            "roles" = bool,
+            Query,
+            description = "Whether to include roles in the response",
+            example = json!(true)
+        )
+    ),
+    responses(
+        (status = 200, body = v0::MemberResponse),
+    ),
+)]
 #[get("/<target>/members/<member>?<roles>")]
 pub async fn fetch(
     db: &State<Database>,

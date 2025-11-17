@@ -10,10 +10,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Edit Server
+/// Edit Server
 ///
 /// Edit a server by its id.
-#[utoipa::path(tag = "Server Information")]
+#[utoipa::path(
+    tag = "Server Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Server),
+    ),
+)]
 #[patch("/<target>", data = "<data>")]
 pub async fn edit(
     db: &State<Database>,

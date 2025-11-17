@@ -1,5 +1,6 @@
 use revolt_config::Settings;
-use revolt_database::{util::utoipa::TokenSecurity};
+use revolt_database::util::utoipa::TokenSecurity;
+use revolt_result::ErrorAddon;
 pub use rocket::http::Status;
 pub use rocket::response::Redirect;
 use rocket::{Build, Rocket};
@@ -236,8 +237,12 @@ pub fn mount(config: Settings, mut rocket: Rocket<Build>) -> Rocket<Build> {
     ),
     modifiers(
         &Extensions,
+
+        // TODO: merge these together when authifier is moved into the backend
         &SecurityAddon,
         &TokenSecurity,
+
+        &ErrorAddon,
     ),
 )]
 pub struct ApiDoc;

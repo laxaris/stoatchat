@@ -24,7 +24,7 @@ pub struct CategoriesQueryParams {
     security(("Session-Token" = []), ("Bot-Token" = [])),
     params(CategoriesQueryParams),
     responses(
-        (status = 200, description = "Categories results", body = inline(Vec<types::CategoryResponse>)),
+        (status = 200, description = "Categories results", body = Vec<types::CategoryResponse>),
         (status = "default", body = Error)
     )
 )]

@@ -5,10 +5,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Remove Member from Group
+/// Remove Member from Group
 ///
 /// Removes a user from the group.
-#[utoipa::path(tag = "Groups")]
+#[utoipa::path(
+    tag = "Groups",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/recipients/<member>")]
 pub async fn remove_member(
     db: &State<Database>,

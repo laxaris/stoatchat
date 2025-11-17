@@ -7,10 +7,16 @@ use revolt_permissions::PermissionQuery;
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Server Emoji
+/// Fetch Server Emoji
 ///
 /// Fetch all emoji on a server.
-#[utoipa::path(tag = "Server Customisation")]
+#[utoipa::path(
+    tag = "Server Customisation",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = Vec<v0::Emoji>),
+    ),
+)]
 #[get("/<target>/emojis")]
 pub async fn list_emoji(
     db: &State<Database>,

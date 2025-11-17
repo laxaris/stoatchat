@@ -3,10 +3,16 @@ use revolt_models::v0::FetchBotResponse;
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Bot
+/// Fetch Bot
 ///
 /// Fetch details of a bot you own by its id.
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = FetchBotResponse),
+    ),
+)]
 #[get("/<bot>")]
 pub async fn fetch_bot(
     db: &State<Database>,

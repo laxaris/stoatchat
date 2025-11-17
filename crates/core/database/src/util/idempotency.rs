@@ -10,16 +10,16 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct IdempotencyKey {
-    key: String,
-}
+#[cfg_attr(feature = "utoipa", derive(IntoParams))]
+#[cfg_attr(feature = "utoipa", into_params(names("Idempotency-Key"), parameter_in=Header))]
+pub struct IdempotencyKey(String);
 
 static TOKEN_CACHE: Lazy<Mutex<lru::LruCache<String, ()>>> =
     Lazy::new(|| Mutex::new(lru::LruCache::new(NonZeroUsize::new(1000).unwrap())));
 
 impl IdempotencyKey {
     pub fn unchecked_from_string(key: String) -> Self {
-        Self { key }
+        Self(key)
     }
 
     // Backwards compatibility.
@@ -32,14 +32,14 @@ impl IdempotencyKey {
             }
 
             cache.put(v.clone(), ());
-            self.key = v;
+            self.0 = v;
         }
 
         Ok(())
     }
 
     pub fn into_key(self) -> String {
-        self.key
+        self.0
     }
 }
 
@@ -110,18 +110,16 @@ impl<'r> FromRequest<'r> for IdempotencyKey {
                 ));
             }
 
-            let idempotency = IdempotencyKey { key };
+            let idempotency = IdempotencyKey(key);
             let mut cache = TOKEN_CACHE.lock().await;
-            if cache.get(&idempotency.key).is_some() {
+            if cache.get(&idempotency.0).is_some() {
                 return Outcome::Error((Status::Conflict, create_error!(DuplicateNonce)));
             }
 
-            cache.put(idempotency.key.clone(), ());
+            cache.put(idempotency.0.clone(), ());
             return Outcome::Success(idempotency);
         }
 
-        Outcome::Success(IdempotencyKey {
-            key: ulid::Ulid::new().to_string(),
-        })
+        Outcome::Success(IdempotencyKey(ulid::Ulid::new().to_string()))
     }
 }

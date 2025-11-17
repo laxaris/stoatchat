@@ -3,10 +3,16 @@ use revolt_models::v0::{self, InviteJoinResponse};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Join Invite
+/// Join Invite
 ///
 /// Join an invite by its ID
-#[utoipa::path(tag = "Invites")]
+#[utoipa::path(
+    tag = "Invites",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::InviteJoinResponse),
+    ),
+)]
 #[post("/<target>")]
 pub async fn join(
     db: &State<Database>,

@@ -5,10 +5,16 @@ use revolt_result::Result;
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Block User
+/// Block User
 ///
 /// Block another user by their id.
-#[utoipa::path(tag = "Relationships")]
+#[utoipa::path(
+    tag = "Relationships",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[put("/<target>/block")]
 pub async fn block(
     db: &State<Database>,

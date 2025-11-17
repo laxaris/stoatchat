@@ -7,10 +7,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Kick Member
+/// Kick Member
 ///
 /// Removes a member from the server.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/members/<member>")]
 pub async fn kick(
     db: &State<Database>,

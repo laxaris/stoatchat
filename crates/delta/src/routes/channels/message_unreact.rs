@@ -8,12 +8,19 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Remove Reaction(s) to Message
+/// Remove Reaction(s) to Message
 ///
 /// Remove your own, someone else's or all of a given reaction.
 ///
 /// Requires `ManageMessages` if changing others' reactions.
-#[utoipa::path(tag = "Interactions")]
+#[utoipa::path(
+    tag = "Interactions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(v0::OptionsUnreact),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/messages/<msg>/reactions/<emoji>?<options..>")]
 pub async fn unreact_message(
     db: &State<Database>,

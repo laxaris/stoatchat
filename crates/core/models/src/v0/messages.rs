@@ -279,6 +279,7 @@ auto_derived!(
     /// Options for querying messages
     #[cfg_attr(feature = "validator", derive(Validate))]
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsQueryMessages {
         /// Maximum number of messages to fetch
         ///
@@ -357,6 +358,7 @@ auto_derived!(
 
     /// Options for removing reaction
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsUnreact {
         /// Remove a specific user's reaction
         pub user_id: Option<String>,

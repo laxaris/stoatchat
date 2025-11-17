@@ -7,10 +7,16 @@ use validator::Validate;
 
 use rocket::{serde::json::Json, State};
 
-/// # Create New Emoji
+/// Create New Emoji
 ///
 /// Create an emoji by its Autumn upload id.
-#[utoipa::path(tag = "Emojis")]
+#[utoipa::path(
+    tag = "Emojis",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Emoji),
+    ),
+)]
 #[put("/emoji/<id>", data = "<data>")]
 pub async fn create_emoji(
     db: &State<Database>,

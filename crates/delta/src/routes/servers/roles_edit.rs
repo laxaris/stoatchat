@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Edit Role
+/// Edit Role
 ///
 /// Edit a role by its id.
-#[utoipa::path(tag = "Server Permissions")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Role),
+    ),
+)]
 #[patch("/<target>/roles/<role_id>", data = "<data>", rank = 1)]
 pub async fn edit(
     db: &State<Database>,

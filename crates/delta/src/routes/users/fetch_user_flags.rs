@@ -3,10 +3,15 @@ use revolt_models::v0;
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch User Flags
+/// Fetch User Flags
 ///
 /// Retrieve a user's flags.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    responses(
+        (status = 200, body = v0::FlagResponse),
+    ),
+)]
 #[get("/<target>/flags")]
 pub async fn fetch_user_flags(
     db: &State<Database>,

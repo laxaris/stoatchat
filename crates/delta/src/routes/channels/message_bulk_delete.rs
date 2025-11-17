@@ -10,14 +10,20 @@ use rocket::{serde::json::Json, State};
 use rocket_empty::EmptyResponse;
 use validator::Validate;
 
-/// # Bulk Delete Messages
+/// Bulk Delete Messages
 ///
 /// Delete multiple messages you've sent or one you have permission to delete.
 ///
 /// This will always require `ManageMessages` permission regardless of whether you own the message or not.
 ///
 /// Messages must have been sent within the past 1 week.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/messages/bulk", data = "<options>", rank = 1)]
 pub async fn bulk_delete_messages(
     db: &State<Database>,

@@ -5,10 +5,16 @@ use revolt_result::Result;
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Fetch Owned Bots
+/// Fetch Owned Bots
 ///
 /// Fetch all of the bots that you have control over.
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = OwnedBotsResponse),
+    ),
+)]
 #[get("/@me")]
 pub async fn fetch_owned_bots(db: &State<Database>, user: User) -> Result<Json<OwnedBotsResponse>> {
     let mut bots = db.fetch_bots_by_user(&user.id).await?;

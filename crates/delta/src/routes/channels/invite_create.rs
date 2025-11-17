@@ -8,12 +8,18 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Create Invite
+/// Create Invite
 ///
 /// Creates an invite to this channel.
 ///
 /// Channel must be a `TextChannel`.
-#[utoipa::path(tag = "Channel Invites")]
+#[utoipa::path(
+    tag = "Channel Invites",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::Invite),
+    ),
+)]
 #[post("/<target>/invites")]
 pub async fn create_invite(
     db: &State<Database>,

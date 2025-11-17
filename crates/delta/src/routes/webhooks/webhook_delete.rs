@@ -7,10 +7,16 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Deletes a webhook
+/// Deletes a webhook
 ///
 /// Deletes a webhook
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<webhook_id>")]
 pub async fn webhook_delete(
     db: &State<Database>,

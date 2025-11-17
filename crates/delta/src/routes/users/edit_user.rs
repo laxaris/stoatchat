@@ -6,10 +6,16 @@ use rocket::serde::json::Json;
 use rocket::State;
 use validator::Validate;
 
-/// # Edit User
+/// Edit User
 ///
 /// Edit currently authenticated user.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[patch("/<target>", data = "<data>")]
 pub async fn edit(
     db: &State<Database>,

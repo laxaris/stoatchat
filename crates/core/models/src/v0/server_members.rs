@@ -99,6 +99,7 @@ auto_derived!(
 
     /// Options for fetching all members
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsFetchAllMembers {
         /// Whether to exclude offline users
         pub exclude_offline: Option<bool>,

@@ -5,10 +5,16 @@ use revolt_result::{create_error, Result};
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Fetch Public Bot
+/// Fetch Public Bot
 ///
 /// Fetch details of a public (or owned) bot by its id.
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = []), ()),
+    responses(
+        (status = 200, body = PublicBot),
+    ),
+)]
 #[get("/<target>/invite")]
 pub async fn fetch_public_bot(
     db: &State<Database>,

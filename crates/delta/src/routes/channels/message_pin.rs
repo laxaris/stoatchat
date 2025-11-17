@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Pins a message
+/// Pins a message
 ///
 /// Pins a message by its id.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[post("/<target>/messages/<msg>/pin")]
 pub async fn message_pin(
     db: &State<Database>,

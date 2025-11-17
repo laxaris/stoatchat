@@ -7,12 +7,18 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Group Members
+/// Fetch Group Members
 ///
 /// Retrieves all users who are part of this group.
 ///
 /// This may not return full user information if users are not friends but have mutual connections.
-#[utoipa::path(tag = "Groups")]
+#[utoipa::path(
+    tag = "Groups",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = Vec<v0::User>),
+    ),
+)]
 #[get("/<target>/members")]
 pub async fn fetch_members(
     db: &State<Database>,

@@ -283,6 +283,7 @@ auto_derived!(
 
     /// Options when deleting a channel
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsChannelDelete {
         /// Whether to not send a leave message
         pub leave_silently: Option<bool>,

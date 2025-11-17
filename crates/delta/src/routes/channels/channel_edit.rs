@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Edit Channel
+/// Edit Channel
 ///
 /// Edit a channel object by its id.
-#[utoipa::path(tag = "Channel Information")]
+#[utoipa::path(
+    tag = "Channel Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[patch("/<target>", data = "<data>")]
 pub async fn edit(
     db: &State<Database>,

@@ -7,10 +7,16 @@ use revolt_permissions::{calculate_server_permissions, ChannelPermission, Overri
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Set Role Permission
+/// Set Role Permission
 ///
 /// Sets permissions for the specified role in the server.
-#[utoipa::path(tag = "Server Permissions")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Server),
+    ),
+)]
 #[put("/<target>/permissions/<role_id>", data = "<data>", rank = 2)]
 pub async fn set_role_permission(
     db: &State<Database>,

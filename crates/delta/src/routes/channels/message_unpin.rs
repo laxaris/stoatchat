@@ -1,14 +1,23 @@
-use revolt_database::{util::{permissions::DatabasePermissionQuery, reference::Reference}, Channel, Database, FieldsMessage, PartialMessage, SystemMessage, User, AMQP};
+use revolt_database::{
+    util::{permissions::DatabasePermissionQuery, reference::Reference},
+    Channel, Database, FieldsMessage, PartialMessage, SystemMessage, User, AMQP,
+};
 use revolt_models::v0::MessageAuthor;
 use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Unpins a message
+/// Unpins a message
 ///
 /// Unpins a message by its id.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/messages/<msg>/pin")]
 pub async fn message_unpin(
     db: &State<Database>,

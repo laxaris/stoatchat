@@ -9,8 +9,8 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use serde::{Deserialize, Serialize};
 
-/// # Query Parameters
-#[derive(Deserialize, ToSchema, FromForm)]
+/// Query Parameters
+#[derive(Deserialize, ToSchema, FromForm, IntoParams)]
 pub struct OptionsQueryMembers {
     /// String to search for
     query: String,
@@ -19,8 +19,8 @@ pub struct OptionsQueryMembers {
     experimental_api: bool,
 }
 
-/// # Query members by name
-#[derive(Serialize, ToSchema)]
+/// Query members by name
+#[derive(Serialize, ToSchema, IntoParams)]
 pub struct MemberQueryResponse {
     /// List of members
     members: Vec<v0::Member>,
@@ -28,10 +28,17 @@ pub struct MemberQueryResponse {
     users: Vec<v0::User>,
 }
 
-/// # Query members by name
+/// Query members by name
 ///
 /// Query members by a given name, this API is not stable and will be removed in the future.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(OptionsQueryMembers),
+    responses(
+        (status = 200, body = MemberQueryResponse),
+    ),
+)]
 #[get("/<target>/members_experimental_query?<options..>")]
 pub async fn member_experimental_query(
     db: &State<Database>,

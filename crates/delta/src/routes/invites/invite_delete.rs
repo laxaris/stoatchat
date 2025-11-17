@@ -7,10 +7,16 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Delete Invite
+/// Delete Invite
 ///
 /// Delete an invite by its id.
-#[utoipa::path(tag = "Invites")]
+#[utoipa::path(
+    tag = "Invites",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>")]
 pub async fn delete(db: &State<Database>, user: User, target: Reference<'_>) -> Result<EmptyResponse> {
     let invite = target.as_invite(db).await?;

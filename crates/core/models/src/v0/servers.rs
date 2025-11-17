@@ -198,6 +198,7 @@ auto_derived!(
 
     /// Options when fetching server
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsFetchServer {
         /// Whether to include channels
         pub include_channels: Option<bool>,
@@ -284,6 +285,7 @@ auto_derived!(
 
     /// Options when leaving a server
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsServerDelete {
         /// Whether to not send a leave message
         pub leave_silently: Option<bool>,

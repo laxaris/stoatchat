@@ -5,10 +5,15 @@ use revolt_models::validator::Validate;
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Edits a webhook
+/// Edits a webhook
 ///
 /// Edits a webhook with a token
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    responses(
+        (status = 200, body = Webhook),
+    ),
+)]
 #[patch("/<webhook_id>/<token>", data = "<data>")]
 pub async fn webhook_edit_token(
     db: &State<Database>,

@@ -11,10 +11,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Edit Member
+/// Edit Member
 ///
 /// Edit a member by their id.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Member),
+    ),
+)]
 #[patch("/<server>/members/<member>", data = "<data>")]
 pub async fn edit(
     db: &State<Database>,
@@ -40,7 +46,9 @@ pub async fn edit(
     let permissions = calculate_server_permissions(&mut query).await;
 
     // Fetch target permissions
-    let mut target_query = DatabasePermissionQuery::new(db, &target_user).server(&server).member(&member);
+    let mut target_query = DatabasePermissionQuery::new(db, &target_user)
+        .server(&server)
+        .member(&member);
     let target_permissions = calculate_server_permissions(&mut target_query).await;
 
     // Check permissions in server
@@ -71,7 +79,7 @@ pub async fn edit(
             }
 
             if target_permissions.has_channel_permission(ChannelPermission::TimeoutMembers) {
-                return Err(create_error!(IsElevated))
+                return Err(create_error!(IsElevated));
             }
         }
 

@@ -9,10 +9,16 @@ use revolt_permissions::{
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Set Default Permission
+/// Set Default Permission
 ///
 /// Sets permissions for the default role in this server.
-#[utoipa::path(tag = "Server Permissions")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Server),
+    ),
+)]
 #[put("/<target>/permissions/default", data = "<data>", rank = 1)]
 pub async fn set_default_server_permissions(
     db: &State<Database>,

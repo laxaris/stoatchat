@@ -9,10 +9,22 @@ use std::collections::HashMap;
 
 type Data = HashMap<String, String>;
 
-/// # Set Settings
+/// Set Settings
 ///
 /// Upload data to save to settings.
-#[utoipa::path(tag = "Sync")]
+#[utoipa::path(
+    tag = "Sync",
+    security(("Session-Token" = [])),
+    request_body(
+        content = Data,
+        content_type = "application/json",
+        example = json!({"servers": "[\"01F7ZSBSFHQ8TA81725KQCSDDP\"]"}),
+    ),
+    params(v0::OptionsSetSettings),
+    responses(
+        (status = 204),
+    ),
+)]
 #[post("/settings/set?<options..>", data = "<data>")]
 pub async fn set(
     db: &State<Database>,

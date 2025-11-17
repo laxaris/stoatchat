@@ -9,10 +9,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Ban User
+/// Ban User
 ///
 /// Ban a user by their id.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::ServerBan),
+    ),
+)]
 #[put("/<server>/bans/<target>", data = "<data>")]
 pub async fn ban(
     db: &State<Database>,

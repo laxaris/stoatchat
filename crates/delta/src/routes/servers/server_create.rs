@@ -6,10 +6,16 @@ use rocket::serde::json::Json;
 use rocket::State;
 use validator::Validate;
 
-/// # Create Server
+/// Create Server
 ///
 /// Create a new server.
-#[utoipa::path(tag = "Server Information")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::CreateServerLegacyResponse),
+    ),
+)]
 #[post("/create", data = "<data>")]
 pub async fn create_server(
     db: &State<Database>,

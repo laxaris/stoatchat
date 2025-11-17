@@ -3,10 +3,16 @@ use revolt_models::v0;
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Invite
+/// Fetch Invite
 ///
 /// Fetch an invite by its id.
-#[utoipa::path(tag = "Invites")]
+#[utoipa::path(
+    tag = "Invites",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::InviteResponse),
+    ),
+)]
 #[get("/<target>")]
 pub async fn fetch(db: &State<Database>, target: Reference<'_>) -> Result<Json<v0::InviteResponse>> {
     Ok(Json(match target.as_invite(db).await? {

@@ -3,10 +3,15 @@ use revolt_models::v0::Webhook;
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Gets a webhook
+/// Gets a webhook
 ///
 /// Gets a webhook with a token
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    responses(
+        (status = 200, body = Webhook),
+    ),
+)]
 #[get("/<webhook_id>/<token>")]
 pub async fn webhook_fetch_token(
     db: &State<Database>,

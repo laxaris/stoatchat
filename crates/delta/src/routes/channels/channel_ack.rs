@@ -7,10 +7,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Acknowledge Message
+/// Acknowledge Message
 ///
 /// Lets the server and all other clients know that we've seen this message id in this channel.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204)
+    )
+)]
 #[put("/<target>/ack/<message>")]
 pub async fn ack(
     db: &State<Database>,

@@ -7,12 +7,18 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Set Default Permission
+/// Set Default Permission
 ///
 /// Sets permissions for the default role in this channel.
 ///
 /// Channel must be a `Group`, `TextChannel` or `VoiceChannel`.
-#[utoipa::path(tag = "Channel Permissions")]
+#[utoipa::path(
+    tag = "Channel Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[put("/<target>/permissions/default", data = "<data>", rank = 1)]
 pub async fn set_default_channel_permissions(
     db: &State<Database>,

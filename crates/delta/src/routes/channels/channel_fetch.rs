@@ -8,10 +8,16 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Channel
+/// Fetch Channel
 ///
 /// Fetch channel by its id.
-#[utoipa::path(tag = "Channel Information")]
+#[utoipa::path(
+    tag = "Channel Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[get("/<target>")]
 pub async fn fetch(
     db: &State<Database>,

@@ -10,10 +10,16 @@ use rocket::{serde::json::Json, State};
 
 use validator::Validate;
 
-/// # Executes a webhook
+/// Executes a webhook
 ///
 /// Executes a webhook and sends a message
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    params(IdempotencyKey),
+    responses(
+        (status = 200, body = v0::Message)
+    )
+)]
 #[post("/<webhook_id>/<token>", data = "<data>")]
 pub async fn webhook_execute(
     db: &State<Database>,

@@ -4,10 +4,16 @@ use revolt_result::Result;
 
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Emoji
+/// Fetch Emoji
 ///
 /// Fetch an emoji by its id.
-#[utoipa::path(tag = "Emojis")]
+#[utoipa::path(
+    tag = "Emojis",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Emoji),
+    ),
+)]
 #[get("/emoji/<emoji_id>")]
 pub async fn fetch_emoji(db: &State<Database>, emoji_id: Reference<'_>) -> Result<Json<v0::Emoji>> {
     emoji_id

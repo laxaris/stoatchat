@@ -3,6 +3,7 @@ use rocket::response::{self, Responder};
 use rocket::{Request, Response};
 
 #[derive(ToSchema)]
+#[schema(format = "binary", value_type = String)]
 pub struct CachedFile(Vec<u8>);
 
 pub static CACHE_CONTROL: &str = "public, max-age=31536000, immutable";
@@ -15,10 +16,21 @@ impl<'r> Responder<'r, 'static> for CachedFile {
     }
 }
 
-/// # Fetch Default Avatar
+/// Fetch Default Avatar
 ///
 /// This returns a default avatar based on the given id.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (
+            status = 200,
+            description = "PNG image with the users default avatar.",
+            content_type = "image/png",
+            body = CachedFile,
+        ),
+    ),
+)]
 #[get("/<target>/default_avatar")]
 pub async fn default_avatar(target: String) -> (ContentType, CachedFile) {
     (

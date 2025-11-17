@@ -7,12 +7,18 @@ use revolt_permissions::{calculate_user_permissions, UserPermission};
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Open Direct Message
+/// Open Direct Message
 ///
 /// Open a DM with another user.
 ///
 /// If the target is oneself, a saved messages channel is returned.
-#[utoipa::path(tag = "Direct Messaging")]
+#[utoipa::path(
+    tag = "Direct Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[get("/<target>/dm")]
 pub async fn open_dm(
     db: &State<Database>,

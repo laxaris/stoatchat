@@ -8,10 +8,16 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Join Call
+/// Join Call
 ///
 /// Asks the voice server for a token to join the call.
-#[utoipa::path(tag = "Voice")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::LegacyCreateVoiceUserResponse),
+    ),
+)]
 #[post("/<target>/join_call")]
 pub async fn call(
     db: &State<Database>,

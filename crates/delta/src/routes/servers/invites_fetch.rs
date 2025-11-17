@@ -7,10 +7,16 @@ use revolt_permissions::{calculate_server_permissions, ChannelPermission};
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Invites
+/// Fetch Invites
 ///
 /// Fetch all server invites.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = Vec<v0::Invite>),
+    ),
+)]
 #[get("/<target>/invites")]
 pub async fn invites(
     db: &State<Database>,

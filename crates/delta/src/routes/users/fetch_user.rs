@@ -8,10 +8,16 @@ use revolt_permissions::{calculate_user_permissions, UserPermission};
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch User
+/// Fetch User
 ///
 /// Retrieve a user's information.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[get("/<target>")]
 pub async fn fetch(
     db: &State<Database>,

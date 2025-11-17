@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Add Member to Group
+/// Add Member to Group
 ///
 /// Adds another user to the group.
-#[utoipa::path(tag = "Groups")]
+#[utoipa::path(
+    tag = "Groups",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[put("/<group_id>/recipients/<member_id>")]
 pub async fn add_member(
     db: &State<Database>,

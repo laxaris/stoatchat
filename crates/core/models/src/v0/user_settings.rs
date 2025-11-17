@@ -17,6 +17,7 @@ auto_derived!(
 
     /// Additional options for inserting settings
     #[cfg_attr(feature = "rocket", derive(FromForm))]
+    #[cfg_attr(feature = "utoipa", derive(IntoParams))]
     pub struct OptionsSetSettings {
         /// Timestamp of settings change.
         ///

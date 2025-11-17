@@ -9,10 +9,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Create Role
+/// Create Role
 ///
 /// Creates a new server role.
-#[utoipa::path(tag = "Server Permissions")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::NewRoleResponse),
+    ),
+)]
 #[post("/<target>/roles", data = "<data>")]
 pub async fn create(
     db: &State<Database>,

@@ -5,10 +5,16 @@ use rocket_empty::EmptyResponse;
 
 use rocket::State;
 
-/// # Unsubscribe
+/// Unsubscribe
 ///
 /// Remove the Web Push subscription associated with the current session.
-#[utoipa::path(tag = "Web Push")]
+#[utoipa::path(
+    tag = "Web Push",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[post("/unsubscribe")]
 pub async fn unsubscribe(
     authifier: &State<Authifier>,

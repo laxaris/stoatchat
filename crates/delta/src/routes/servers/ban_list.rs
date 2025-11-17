@@ -9,10 +9,16 @@ use revolt_result::Result;
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Fetch Bans
+/// Fetch Bans
 ///
 /// Fetch all bans on a server.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::BanListResult),
+    ),
+)]
 #[get("/<target>/bans")]
 pub async fn list(
     db: &State<Database>,

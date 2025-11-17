@@ -5,10 +5,17 @@ use rocket::State;
 
 use rocket_empty::EmptyResponse;
 
-/// # Delete / Leave Server
+/// Delete / Leave Server
 ///
 /// Deletes a server if owner otherwise leaves.
-#[utoipa::path(tag = "Server Information")]
+#[utoipa::path(
+    tag = "Server Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(v0::OptionsServerDelete),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>?<options..>")]
 pub async fn delete(
     db: &State<Database>,

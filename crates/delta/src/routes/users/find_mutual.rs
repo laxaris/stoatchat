@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Fetch Mutual Friends, Servers, Groups and DMs
+/// Fetch Mutual Friends, Servers, Groups and DMs
 ///
 /// Retrieve a list of mutual friends, servers, groups and DMs with another user.
-#[utoipa::path(tag = "Relationships")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::MutualResponse),
+    ),
+)]
 #[get("/<target>/mutual")]
 pub async fn mutual(
     db: &State<Database>,

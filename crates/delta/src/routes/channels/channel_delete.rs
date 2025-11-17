@@ -8,10 +8,17 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Close Channel
+/// Close Channel
 ///
 /// Deletes a server channel, leaves a group or closes a group.
-#[utoipa::path(tag = "Channel Information")]
+#[utoipa::path(
+    tag = "Channel Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(v0::OptionsChannelDelete),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>?<options..>")]
 pub async fn delete(
     db: &State<Database>,

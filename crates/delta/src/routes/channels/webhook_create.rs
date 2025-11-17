@@ -11,10 +11,16 @@ use rocket::{serde::json::Json, State};
 use ulid::Ulid;
 use validator::Validate;
 
-/// # Creates a webhook
+/// Creates a webhook
 ///
 /// Creates a webhook which 3rd party platforms can use to send messages
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Webhook),
+    ),
+)]
 #[post("/<target>/webhooks", data = "<data>")]
 pub async fn create_webhook(
     db: &State<Database>,

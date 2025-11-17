@@ -5,10 +5,16 @@ use revolt_result::{create_error, Result};
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Send Friend Request
+/// Send Friend Request
 ///
 /// Send a friend request to another user.
-#[utoipa::path(tag = "Relationships")]
+#[utoipa::path(
+    tag = "Relationships",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[post("/friend", data = "<data>")]
 pub async fn send_friend_request(
     db: &State<Database>,

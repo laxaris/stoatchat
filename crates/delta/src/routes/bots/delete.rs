@@ -3,10 +3,16 @@ use revolt_result::{create_error, Result};
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Delete Bot
+/// Delete Bot
 ///
 /// Delete a bot by its id.
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>")]
 pub async fn delete_bot(
     db: &State<Database>,

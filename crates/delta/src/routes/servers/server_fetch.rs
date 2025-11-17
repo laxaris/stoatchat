@@ -7,10 +7,17 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission, Permi
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Server
+/// Fetch Server
 ///
 /// Fetch a server by its id.
-#[utoipa::path(tag = "Server Information")]
+#[utoipa::path(
+    tag = "Server Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    params(v0::OptionsFetchServer),
+    responses(
+        (status = 200, body = v0::Server),
+    ),
+)]
 #[get("/<target>?<options..>")]
 pub async fn fetch(
     db: &State<Database>,

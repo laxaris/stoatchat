@@ -11,7 +11,7 @@ static CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
     path = "/",
     tag = "Misc",
     responses(
-        (status = 200, description = "Root response", body = inline(types::RootResponse))
+        (status = 200, description = "Root response", body = types::RootResponse)
     )
 )]
 pub async fn root() -> Json<types::RootResponse<'static>> {

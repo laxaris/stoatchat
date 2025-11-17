@@ -5,10 +5,16 @@ use revolt_result::Result;
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Unblock User
+/// Unblock User
 ///
 /// Unblock another user by their id.
-#[utoipa::path(tag = "Relationships")]
+#[utoipa::path(
+    tag = "Relationships",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[delete("/<target>/block")]
 pub async fn unblock(
     db: &State<Database>,

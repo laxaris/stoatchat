@@ -7,12 +7,18 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission, Overr
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Set Role Permission
+/// Set Role Permission
 ///
 /// Sets permissions for the specified role in this channel.
 ///
 /// Channel must be a `TextChannel` or `VoiceChannel`.
-#[utoipa::path(tag = "Channel Permissions")]
+#[utoipa::path(
+    tag = "Channel Permissions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[put("/<target>/permissions/<role_id>", data = "<data>", rank = 2)]
 pub async fn set_role_permissions(
     db: &State<Database>,

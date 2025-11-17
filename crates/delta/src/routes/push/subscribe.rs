@@ -6,12 +6,18 @@ use revolt_result::{create_database_error, Result};
 use rocket::{serde::json::Json, State};
 use rocket_empty::EmptyResponse;
 
-/// # Push Subscribe
+/// Push Subscribe
 ///
 /// Create a new Web Push subscription.
 ///
 /// If an existing subscription exists on this session, it will be removed.
-#[utoipa::path(tag = "Web Push")]
+#[utoipa::path(
+    tag = "Web Push",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[post("/subscribe", data = "<data>")]
 pub async fn subscribe(
     authifier: &State<Authifier>,

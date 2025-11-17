@@ -5,10 +5,16 @@ use rocket::serde::json::Json;
 use rocket::State;
 use validator::Validate;
 
-/// # Create Bot
+/// Create Bot
 ///
 /// Create a new Revolt bot.
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::BotWithUserResponse),
+    ),
+)]
 #[post("/create", data = "<info>")]
 pub async fn create_bot(
     db: &State<Database>,

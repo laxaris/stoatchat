@@ -7,10 +7,16 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Add Reaction to Message
+/// Add Reaction to Message
 ///
 /// React to a given message.
-#[utoipa::path(tag = "Interactions")]
+#[utoipa::path(
+    tag = "Interactions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[put("/<target>/messages/<msg>/reactions/<emoji>")]
 pub async fn react_message(
     db: &State<Database>,

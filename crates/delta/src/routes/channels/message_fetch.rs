@@ -7,10 +7,16 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Message
+/// Fetch Message
 ///
 /// Retrieves a message by its id.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Message),
+    ),
+)]
 #[get("/<target>/messages/<msg>")]
 pub async fn fetch(
     db: &State<Database>,

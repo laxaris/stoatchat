@@ -7,10 +7,16 @@ use revolt_permissions::{calculate_channel_permissions, ChannelPermission};
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Gets a webhook
+/// Gets a webhook
 ///
 /// Gets a webhook
-#[utoipa::path(tag = "Webhooks")]
+#[utoipa::path(
+    tag = "Webhooks",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = Webhook),
+    ),
+)]
 #[get("/<webhook_id>")]
 pub async fn webhook_fetch(
     db: &State<Database>,

@@ -11,10 +11,16 @@ use rocket::State;
 use rocket::serde::json::Json;
 use rocket_empty::EmptyResponse;
 
-/// # Invite Bot
+/// Invite Bot
 ///
 /// Invite a bot to a server or group by its id.`
-#[utoipa::path(tag = "Bots")]
+#[utoipa::path(
+    tag = "Bots",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::BotWithUserResponse),
+    ),
+)]
 #[post("/<target>/invite", data = "<dest>")]
 pub async fn invite_bot(
     db: &State<Database>,

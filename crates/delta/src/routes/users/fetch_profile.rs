@@ -7,12 +7,18 @@ use revolt_permissions::{calculate_user_permissions, UserPermission};
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch User Profile
+/// Fetch User Profile
 ///
 /// Retrieve a user's profile data.
 ///
 /// Will fail if you do not have permission to access the other user's profile.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::UserProfile),
+    ),
+)]
 #[get("/<target>/profile")]
 pub async fn profile(
     db: &State<Database>,

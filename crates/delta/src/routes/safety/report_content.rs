@@ -7,7 +7,7 @@ use validator::Validate;
 
 use rocket::{serde::json::Json, State};
 
-/// # Report Data
+/// Report Data
 #[derive(Validate, Deserialize, ToSchema)]
 pub struct DataReportContent {
     /// Content being reported
@@ -18,10 +18,16 @@ pub struct DataReportContent {
     additional_context: String,
 }
 
-/// # Report Content
+/// Report Content
 ///
 /// Report a piece of content to the moderation team.
-#[utoipa::path(tag = "User Safety")]
+#[utoipa::path(
+    tag = "User Safety",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[post("/report", data = "<data>")]
 pub async fn report_content(
     db: &State<Database>,

@@ -7,10 +7,16 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Delete Message
+/// Delete Message
 ///
 /// Delete a message you've sent or one you have permission to delete.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/messages/<msg>", rank = 2)]
 pub async fn delete(
     db: &State<Database>,

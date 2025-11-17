@@ -15,7 +15,7 @@ use serde_json::json;
 use ulid::Ulid;
 
 auto_derived_partial!(
-    /// # User
+    /// User
     pub struct User {
         /// Unique Id
         #[serde(rename = "_id")]

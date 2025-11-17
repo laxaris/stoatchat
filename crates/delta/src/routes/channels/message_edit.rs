@@ -10,10 +10,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Edit Message
+/// Edit Message
 ///
 /// Edits a message that you've previously sent.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Message),
+    ),
+)]
 #[patch("/<target>/messages/<msg>", data = "<edit>")]
 pub async fn edit(
     db: &State<Database>,

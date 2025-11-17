@@ -4,10 +4,16 @@ use revolt_result::Result;
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Fetch Unreads
+/// Fetch Unreads
 ///
 /// Fetch information about unread state on channels.
-#[utoipa::path(tag = "Sync")]
+#[utoipa::path(
+    tag = "Sync",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::ChannelUnread),
+    ),
+)]
 #[get("/unreads")]
 pub async fn unreads(db: &State<Database>, user: User) -> Result<Json<Vec<v0::ChannelUnread>>> {
     db.fetch_unreads(&user.id)

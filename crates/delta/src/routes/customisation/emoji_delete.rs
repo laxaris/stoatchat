@@ -8,10 +8,16 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Delete Emoji
+/// Delete Emoji
 ///
 /// Delete an emoji by its id.
-#[utoipa::path(tag = "Emojis")]
+#[utoipa::path(
+    tag = "Emojis",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/emoji/<emoji_id>")]
 pub async fn delete_emoji(
     db: &State<Database>,

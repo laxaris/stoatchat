@@ -3,10 +3,16 @@ use revolt_models::v0;
 use revolt_result::Result;
 use rocket::{serde::json::Json, State};
 
-/// # Fetch Direct Message Channels
+/// Fetch Direct Message Channels
 ///
 /// This fetches your direct messages, including any DM and group DM conversations.
-#[utoipa::path(tag = "Direct Messaging")]
+#[utoipa::path(
+    tag = "Direct Messaging",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = Vec<v0::Channel>),
+    ),
+)]
 #[get("/dms")]
 pub async fn direct_messages(db: &State<Database>, user: User) -> Result<Json<Vec<v0::Channel>>> {
     db.find_direct_messages(&user.id)

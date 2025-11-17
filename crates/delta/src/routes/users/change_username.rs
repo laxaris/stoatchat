@@ -14,7 +14,7 @@ use validator::Validate;
 /// Block lookalike characters
 pub static RE_USERNAME: Lazy<Regex> = Lazy::new(|| Regex::new(r"^(\p{L}|[\d_.-])+$").unwrap());
 
-/// # Username Information
+/// Username Information
 #[derive(Validate, Serialize, Deserialize, ToSchema)]
 pub struct DataChangeUsername {
     /// New username
@@ -25,10 +25,16 @@ pub struct DataChangeUsername {
     password: String,
 }
 
-/// # Change Username
+/// Change Username
 ///
 /// Change your username.
-#[utoipa::path(tag = "User Information")]
+#[utoipa::path(
+    tag = "User Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[patch("/@me/username", data = "<data>")]
 pub async fn change_username(
     db: &State<Database>,

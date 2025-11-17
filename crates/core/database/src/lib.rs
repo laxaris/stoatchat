@@ -25,6 +25,10 @@ pub use mongodb;
 #[macro_use]
 extern crate bson;
 
+#[cfg(feature = "utoipa")]
+#[macro_use]
+extern crate utoipa;
+
 #[cfg(not(feature = "async-std-runtime"))]
 compile_error!("async-std-runtime feature must be enabled.");
 

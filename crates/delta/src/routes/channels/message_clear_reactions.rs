@@ -7,12 +7,18 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Remove All Reactions from Message
+/// Remove All Reactions from Message
 ///
 /// Remove your own, someone else's or all of a given reaction.
 ///
 /// Requires `ManageMessages` permission.
-#[utoipa::path(tag = "Interactions")]
+#[utoipa::path(
+    tag = "Interactions",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<target>/messages/<msg>/reactions")]
 pub async fn clear_reactions(
     db: &State<Database>,
@@ -37,7 +43,7 @@ pub async fn clear_reactions(
                 reactions: Some(Default::default()),
                 ..Default::default()
             },
-            vec![]
+            vec![],
         )
         .await
         .map(|_| EmptyResponse)

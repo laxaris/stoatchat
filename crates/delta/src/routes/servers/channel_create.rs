@@ -8,10 +8,16 @@ use rocket::serde::json::Json;
 use rocket::State;
 use validator::Validate;
 
-/// # Create Channel
+/// Create Channel
 ///
 /// Create a new Text or Voice channel.
-#[utoipa::path(tag = "Server Information")]
+#[utoipa::path(
+    tag = "Server Information",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::Channel),
+    ),
+)]
 #[post("/<server>/channels", data = "<data>")]
 pub async fn create_server_channel(
     db: &State<Database>,

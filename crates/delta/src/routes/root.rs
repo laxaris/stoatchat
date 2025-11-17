@@ -3,10 +3,13 @@ use revolt_models::v0;
 use revolt_result::Result;
 use rocket::serde::json::Json;
 
-/// # Query Node
+/// Query Node
 ///
 /// Fetch the server configuration for this Revolt instance.
-#[utoipa::path(tag = "Core")]
+#[utoipa::path(
+    tag = "Core",
+    responses((status = 200, body = v0::RevoltConfig))
+)]
 #[get("/")]
 pub async fn root() -> Result<Json<v0::RevoltConfig>> {
     let config = config().await;

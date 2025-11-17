@@ -5,10 +5,16 @@ use revolt_result::{create_error, Result};
 use rocket::serde::json::Json;
 use rocket::State;
 
-/// # Deny Friend Request / Remove Friend
+/// Deny Friend Request / Remove Friend
 ///
 /// Denies another user's friend request or removes an existing friend.
-#[utoipa::path(tag = "Relationships")]
+#[utoipa::path(
+    tag = "Relationships",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[delete("/<target>/friend")]
 pub async fn remove(
     db: &State<Database>,

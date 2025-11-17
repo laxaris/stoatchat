@@ -8,10 +8,16 @@ use revolt_result::{create_error, Result};
 use rocket::{serde::json::Json, State};
 use validator::Validate;
 
-/// # Search for Messages
+/// Search for Messages
 ///
 /// This route searches for messages within the given parameters.
-#[utoipa::path(tag = "Messaging")]
+#[utoipa::path(
+    tag = "Messaging",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::BulkMessageResponse),
+    ),
+)]
 #[post("/<target>/search", data = "<options>")]
 pub async fn search(
     db: &State<Database>,
@@ -31,7 +37,7 @@ pub async fn search(
     })?;
 
     if options.query.is_some() && options.pinned.is_some() {
-        return Err(create_error!(InvalidOperation))
+        return Err(create_error!(InvalidOperation));
     }
 
     let channel = target.as_channel(db).await?;

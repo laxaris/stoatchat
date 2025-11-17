@@ -7,10 +7,16 @@ use revolt_result::Result;
 use rocket::State;
 use rocket_empty::EmptyResponse;
 
-/// # Unban user
+/// Unban user
 ///
 /// Remove a user's ban.
-#[utoipa::path(tag = "Server Members")]
+#[utoipa::path(
+    tag = "Server Members",
+    security(("Session-Token" = []), ("Bot-Token" = [])),
+    responses(
+        (status = 204),
+    ),
+)]
 #[delete("/<server>/bans/<target>")]
 pub async fn unban(
     db: &State<Database>,

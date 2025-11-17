@@ -15,7 +15,7 @@ use validator::Validate;
 /// Block lookalike characters
 pub static RE_USERNAME: Lazy<Regex> = Lazy::new(|| Regex::new(r"^(\p{L}|[\d_.-])+$").unwrap());
 
-/// # New User Data
+/// New User Data
 #[derive(Validate, Serialize, Deserialize, ToSchema)]
 pub struct DataOnboard {
     /// New username which will be used to identify the user on the platform
@@ -23,10 +23,16 @@ pub struct DataOnboard {
     username: String,
 }
 
-/// # Complete Onboarding
+/// Complete Onboarding
 ///
 /// This sets a new username, completes onboarding and allows a user to start using Revolt.
-#[utoipa::path(tag = "Onboarding")]
+#[utoipa::path(
+    tag = "Onboarding",
+    security(("Session-Token" = [])),
+    responses(
+        (status = 200, body = v0::User),
+    ),
+)]
 #[post("/complete", data = "<data>")]
 pub async fn complete(
     db: &State<Database>,

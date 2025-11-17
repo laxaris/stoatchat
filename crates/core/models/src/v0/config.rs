@@ -1,5 +1,5 @@
 auto_derived!(
-    /// # hCaptcha Configuration
+    /// hCaptcha Configuration
     pub struct CaptchaFeature {
         /// Whether captcha is enabled
         pub enabled: bool,
@@ -7,7 +7,7 @@ auto_derived!(
         pub key: String,
     }
 
-    /// # Generic Service Configuration
+    /// Generic Service Configuration
     pub struct Feature {
         /// Whether the service is enabled
         pub enabled: bool,
@@ -15,7 +15,7 @@ auto_derived!(
         pub url: String,
     }
 
-    /// # Voice Server Configuration
+    /// Voice Server Configuration
     pub struct VoiceFeature {
         /// Whether voice is enabled
         pub enabled: bool,
@@ -25,7 +25,7 @@ auto_derived!(
         pub ws: String,
     }
 
-    /// # Feature Configuration
+    /// Feature Configuration
     pub struct RevoltFeatures {
         /// hCaptcha configuration
         pub captcha: CaptchaFeature,
@@ -41,7 +41,7 @@ auto_derived!(
         pub voso: VoiceFeature,
     }
 
-    /// # Build Information
+    /// Build Information
     pub struct BuildInformation {
         /// Commit Hash
         pub commit_sha: String,
@@ -55,7 +55,7 @@ auto_derived!(
         pub timestamp: String,
     }
 
-    /// # Server Configuration
+    /// Server Configuration
     pub struct RevoltConfig {
         /// Revolt API Version
         pub revolt: String,
