@@ -173,4 +173,50 @@ impl AbstractUsers for ReferenceDb {
     async fn update_session_last_seen(&self, _session_id: &str, _when: Timestamp) -> Result<()> {
         todo!()
     }
+
+    async fn fetch_user_by_email(&self, email: &str) -> Result<User> {
+        let users = self.users.lock().await;
+        users
+            .values()
+            .find(|u| u.display_name.as_deref() == Some(email))
+            .cloned()
+            .ok_or_else(|| create_error!(NotFound))
+    }
+
+    /// Fetch or create user from SSO information
+    async fn fetch_or_create_sso_user(&self, sso_info: &super::SsoUserInfo) -> Result<User> {
+        use ulid::Ulid;
+
+        // Try to find existing user by email
+        if let Ok(user) = self.fetch_user_by_email(&sso_info.email).await {
+            return Ok(user);
+        }
+
+        // Create new user from SSO info
+        let username = sso_info.username.clone().unwrap_or_else(|| {
+            sso_info.email.split('@').next().unwrap_or("user").to_string()
+        });
+
+        let user = User {
+            id: Ulid::new().to_string(),
+            username: username.clone(),
+            discriminator: format!("{:04}", rand::random::<u16>() % 10000),
+            display_name: Some(sso_info.email.clone()),
+            avatar: None,
+            relations: None,
+            badges: None,
+            status: None,
+            profile: None,
+            flags: None,
+            privileged: false,
+            bot: None,
+            suspended_until: None,
+            last_acknowledged_policy_change: iso8601_timestamp::Timestamp::UNIX_EPOCH,
+        };
+
+        self.insert_user(&user).await?;
+        log::info!("Created new SSO user: {} ({})", user.username, sso_info.email);
+
+        Ok(user)
+    }
 }

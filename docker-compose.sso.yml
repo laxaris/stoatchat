@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # Keycloak SSO Server
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: stoatchat-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      # Fixed hostname so OIDC issuer is always http://localhost:8080
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: "8080"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak-db
+    command: start-dev
+    networks:
+      - stoatchat-network
+
+  # Keycloak Database
+  keycloak-db:
+    image: postgres:16-alpine
+    container_name: stoatchat-keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - stoatchat-network
+
+  # OAuth2 Proxy
+  # Uses manual URL separation: browser-facing URLs use localhost,
+  # backend URLs use host.docker.internal (Docker → host bridge)
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    container_name: stoatchat-oauth2-proxy
+    env_file:
+      - .env.sso
+    command:
+      - --http-address=0.0.0.0:4180
+      - --upstream=http://host.docker.internal:14702
+      - --provider=oidc
+      - --client-id=stoatchat-backend
+      - --client-secret=${OAUTH2_CLIENT_SECRET:-changeme}
+      - --cookie-secret=${OAUTH2_COOKIE_SECRET:-joydtVOtColZkwDV1Cq5A3Hu2SrICfggdOR0XmLijSo=}
+      - --redirect-url=http://localhost:4180/oauth2/callback
+      - --email-domain=*
+      - --cookie-secure=false
+      - --pass-access-token=true
+      - --pass-user-headers=true
+      - --set-xauthrequest=true
+      - --skip-provider-button=false
+      - --code-challenge-method=S256
+      - --scope=openid email profile
+      # Issuer URL matches the token issuer (KC_HOSTNAME=localhost:8080)
+      - --oidc-issuer-url=http://localhost:8080/realms/stoatchat
+      # Skip auto-discovery, manually set URLs for dual-network routing
+      - --skip-oidc-discovery=true
+      # Browser-facing: user's browser goes to localhost
+      - --login-url=http://localhost:8080/realms/stoatchat/protocol/openid-connect/auth
+      # Backend: OAuth2 Proxy reaches Keycloak via Docker bridge
+      - --redeem-url=http://host.docker.internal:8080/realms/stoatchat/protocol/openid-connect/token
+      - --oidc-jwks-url=http://host.docker.internal:8080/realms/stoatchat/protocol/openid-connect/certs
+      - --profile-url=http://host.docker.internal:8080/realms/stoatchat/protocol/openid-connect/userinfo
+    ports:
+      - "4180:4180"
+    depends_on:
+      - keycloak
+    networks:
+      - stoatchat-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Nginx Reverse Proxy (Optional - for production)
+  nginx-sso:
+    image: nginx:alpine
+    container_name: stoatchat-nginx-sso
+    volumes:
+      - ./nginx-sso.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8000:80"
+    depends_on:
+      - oauth2-proxy
+    networks:
+      - stoatchat-network
+
+volumes:
+  keycloak-db-data:
+
+networks:
+  stoatchat-network:
+    driver: bridge

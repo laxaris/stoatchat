@@ -2,7 +2,7 @@ use authifier::models::Session;
 use rocket::http::Status;
 use rocket::request::{self, FromRequest, Outcome, Request};
 
-use crate::{Database, User};
+use crate::{Database, SsoUserInfo, User};
 
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for User {
@@ -27,6 +27,10 @@ impl<'r> FromRequest<'r> for User {
                     }
                 } else if let Outcome::Success(session) = request.guard::<Session>().await {
                     if let Ok(user) = db.fetch_user(&session.user_id).await {
+                        return Some(user);
+                    }
+                } else if let Some(sso_info) = SsoUserInfo::from_rocket_headers(request.headers()) {
+                    if let Ok(user) = db.fetch_or_create_sso_user(&sso_info).await {
                         return Some(user);
                     }
                 }

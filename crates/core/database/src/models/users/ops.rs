@@ -2,7 +2,7 @@ use authifier::models::Session;
 use iso8601_timestamp::Timestamp;
 use revolt_result::Result;
 
-use crate::{FieldsUser, PartialUser, RelationshipStatus, User};
+use crate::{FieldsUser, PartialUser, RelationshipStatus, SsoUserInfo, User};
 
 #[cfg(feature = "mongodb")]
 mod mongodb;
@@ -15,6 +15,9 @@ pub trait AbstractUsers: Sync + Send {
 
     /// Fetch a user from the database
     async fn fetch_user(&self, id: &str) -> Result<User>;
+
+    /// Fetch user by email
+    async fn fetch_user_by_email(&self, email: &str) -> Result<User>;
 
     /// Fetch a user from the database by their username
     async fn fetch_user_by_username(&self, username: &str, discriminator: &str) -> Result<User>;
@@ -65,4 +68,7 @@ pub trait AbstractUsers: Sync + Send {
     async fn remove_push_subscription_by_session_id(&self, session_id: &str) -> Result<()>;
 
     async fn update_session_last_seen(&self, session_id: &str, when: Timestamp) -> Result<()>;
+
+    /// Fetch or create user from SSO information
+    async fn fetch_or_create_sso_user(&self, sso_info: &super::SsoUserInfo) -> Result<User>;
 }

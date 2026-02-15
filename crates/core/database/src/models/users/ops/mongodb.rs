@@ -9,6 +9,7 @@ use crate::IntoDocumentPath;
 use crate::MongoDb;
 use crate::{FieldsUser, PartialUser, RelationshipStatus, User};
 
+
 use super::AbstractUsers;
 
 static COL: &str = "users";
@@ -316,7 +317,6 @@ impl AbstractUsers for MongoDb {
             .map_err(|_| create_database_error!("update_one", COL))
     }
 
-    /// Delete a user by their id
     async fn delete_user(&self, id: &str) -> Result<()> {
         query!(self, delete_one_by_id, COL, id).map(|_| ())
     }
@@ -356,6 +356,49 @@ impl AbstractUsers for MongoDb {
             .await
             .map(|_| ())
             .map_err(|_| create_database_error!("update_one", "sessions"))
+    }
+
+    /// Fetch user by email
+    async fn fetch_user_by_email(&self, email: &str) -> Result<User> {
+        // Since User model doesn't have email field, we use display_name as a workaround 
+        // as implemented in fetch_or_create_sso_user below.
+        self.col::<User>(COL)
+            .find_one(doc! {
+                "display_name": email
+            })
+            .await
+            .map_err(|_| create_database_error!("find_one", COL))?
+            .ok_or_else(|| create_error!(NotFound))
+    }
+
+    async fn fetch_or_create_sso_user(&self, sso_info: &super::SsoUserInfo) -> Result<User> {
+        use ulid::Ulid;
+
+        // Try to find user by email (using display_name as workaround)
+        if let Ok(user) = self.fetch_user_by_email(&sso_info.email).await {
+            return Ok(user);
+        }
+
+        // Create new user from SSO info
+        let user_id = Ulid::new().to_string();
+        let username = sso_info.username.clone()
+            .unwrap_or_else(|| sso_info.email.split('@').next().unwrap_or("user").to_string());
+        
+        // Generate random discriminator
+        let discriminator = format!("{:04}", rand::random::<u16>() % 10000);
+
+        let user = User {
+            id: user_id,
+            username,
+            discriminator,
+            display_name: Some(sso_info.email.clone()),
+            ..Default::default()
+        };
+
+        // Insert the new user
+        self.insert_user(&user).await?;
+
+        Ok(user)
     }
 }
 
